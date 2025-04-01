@@ -87,9 +87,11 @@ while ($keepPlaying) {
 
    $random_number = rand(1, 100);
    $guesses = [];
-   // Calculate when to show the clue (round up for odd chances)
    $showClues = ceil($chances / 2);
    $hintGiven = false;
+
+   // Start the timer
+   $startTime = microtime(true);
 
    while (!in_array($random_number, $guesses) && $chances > 0) {
       echo PHP_EOL;
@@ -107,7 +109,12 @@ while ($keepPlaying) {
       } elseif ($guess > $random_number) {
          echo color_text("Incorrect! The number is less than $guess." . PHP_EOL, 'yellow');
       } else {
+         // Stop the timer
+         $endTime = microtime(true);
+         $timeTaken = $endTime - $startTime;
+
          echo color_text("Congratulations! You guessed the correct number in " . count($guesses) . " attempts." . PHP_EOL, 'green');
+         echo color_text("It took you " . round($timeTaken, 2) . " seconds." . PHP_EOL, 'cyan');
          break;
       }
 
