@@ -50,5 +50,12 @@ This project is inspired by the [Number Guessing Game project](https://roadmap.s
 ## How to Run
 
 1. Clone this repository:
+   ```bash
+   git clone https://github.com/DonAbenz/number-guessing-game-cli.git
+   cd number-guessing-game-cli
+   ```
 2. Run the game:
+   ```bash
+   php game.php
+   ```
 3. Enjoy the game!
