@@ -1,5 +1,11 @@
 <?php
 
+$highScores = [
+   'easy' => ['attempts' => PHP_INT_MAX, 'time' => PHP_INT_MAX],
+   'medium' => ['attempts' => PHP_INT_MAX, 'time' => PHP_INT_MAX],
+   'hard' => ['attempts' => PHP_INT_MAX, 'time' => PHP_INT_MAX],
+];
+
 /**
  * Add color to text output
  */
@@ -63,18 +69,22 @@ while ($keepPlaying) {
 
    $difficulty = (int) get_user_input("Enter your choice: ");
    $chances = 0;
+   $difficultyKey = '';
 
    while (true) {
       if ($difficulty == 1) {
          $chances = 10;
+         $difficultyKey = 'easy';
          echo color_text("Great! You have selected the Easy difficulty level." . PHP_EOL, 'green');
          break;
       } elseif ($difficulty == 2) {
          $chances = 5;
+         $difficultyKey = 'medium';
          echo color_text("Great! You have selected the Medium difficulty level." . PHP_EOL, 'yellow');
          break;
       } elseif ($difficulty == 3) {
          $chances = 3;
+         $difficultyKey = 'hard';
          echo color_text("Great! You have selected the Hard difficulty level." . PHP_EOL, 'red');
          break;
       } else {
@@ -115,6 +125,13 @@ while ($keepPlaying) {
 
          echo color_text("Congratulations! You guessed the correct number in " . count($guesses) . " attempts." . PHP_EOL, 'green');
          echo color_text("It took you " . round($timeTaken, 2) . " seconds." . PHP_EOL, 'cyan');
+
+         // Update high score if applicable
+         if (count($guesses) < $highScores[$difficultyKey]['attempts'] ||
+            (count($guesses) == $highScores[$difficultyKey]['attempts'] && $timeTaken < $highScores[$difficultyKey]['time'])) {
+            $highScores[$difficultyKey] = ['attempts' => count($guesses), 'time' => $timeTaken];
+            echo color_text("New high score for $difficultyKey difficulty!" . PHP_EOL, 'green');
+         }
          break;
       }
 
@@ -137,7 +154,18 @@ while ($keepPlaying) {
 
    echo PHP_EOL;
    echo "Your guesses were: " . implode(", ", $guesses) . PHP_EOL;
-   $playAgain = prompt_choice("Do you want to play again? ", ['yes', 'no']);
+
+   // Display high scores
+   echo PHP_EOL . color_text("High Scores:", 'yellow') . PHP_EOL;
+   foreach ($highScores as $level => $score) {
+      if ($score['attempts'] === PHP_INT_MAX && $score['time'] === PHP_INT_MAX) {
+         echo color_text(ucfirst($level) . ": N/A" . PHP_EOL, 'cyan');
+      } else {
+         echo color_text(ucfirst($level) . ": " . $score['attempts'] . " attempts, " . round($score['time'], 2) . " seconds" . PHP_EOL, 'cyan');
+      }
+   }
+
+   $playAgain = prompt_choice("Do you want to play again? ");
    if (strtolower($playAgain) == 'n') {
       echo color_text("Exiting the game. Thanks for playing!" . PHP_EOL, 'blue');
       $keepPlaying = false;
