@@ -10,6 +10,7 @@ function color_text($text, $color)
       'green' => "\033[32m",
       'yellow' => "\033[33m",
       'blue' => "\033[34m",
+      'cyan' => "\033[36m",
       'reset' => "\033[0m"
    ];
    return $colors[$color] . $text . $colors['reset'];
@@ -86,6 +87,9 @@ while ($keepPlaying) {
 
    $random_number = rand(1, 100);
    $guesses = [];
+   // Calculate when to show the clue (round up for odd chances)
+   $showClues = ceil($chances / 2);
+   $hintGiven = false;
 
    while (!in_array($random_number, $guesses) && $chances > 0) {
       echo PHP_EOL;
@@ -107,10 +111,19 @@ while ($keepPlaying) {
          break;
       }
 
+      if (count($guesses) == $showClues && !$hintGiven) {
+         $hintGiven = true;
+         if ($random_number % 2 == 0) {
+            echo color_text("Hint: The number is even." . PHP_EOL, 'cyan');
+         } else {
+            echo color_text("Hint: The number is odd." . PHP_EOL, 'cyan');
+         }
+      }
+
       echo color_text("Remaining chances: $chances" . PHP_EOL, 'blue');
    }
 
-   if ($chances == 0) {
+   if ($chances == 0 && !in_array($random_number, $guesses)) {
       echo PHP_EOL;
       echo color_text("Sorry! You've used all your chances. The correct number was $random_number." . PHP_EOL, 'red');
    }
